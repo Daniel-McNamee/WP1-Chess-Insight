@@ -15,7 +15,12 @@ export class PlayerSearchComponent {
   player = signal<any | null>(null);
   stats = signal<any | null>(null);
   games = signal<any[]>([]);
+  selectedGame = signal<any | null>(null);
   error = signal<string | null>(null);
+
+  selectGame(game: any) {
+  this.selectedGame.set(game);
+  }
 
   constructor(private chessService: ChessService) {}
 

@@ -54,12 +54,12 @@ app.get("/api/player/:username/stats", async (req, res) => {
 });
 
 
-// GET recent games
+// GET recent games (last 15)
 app.get("/api/player/:username/games", async (req, res) => {
   const { username } = req.params;
 
   try {
-    // get archives list
+    // get archive list
     const archivesRes = await axios.get(
       `https://api.chess.com/pub/player/${username}/games/archives`
     );
@@ -70,22 +70,44 @@ app.get("/api/player/:username/games", async (req, res) => {
       return res.json([]);
     }
 
-    // latest month URL
-    const latestArchive = archives[archives.length - 1];
+    // take last 3 months 
+    const recentArchives = archives.slice(-3);
 
-    // fetch games
-    const gamesRes = await axios.get(latestArchive);
+    let allGames = [];
 
-    const games = gamesRes.data.games;
+    // fetch each archive
+    for (const url of recentArchives) {
+      const gamesRes = await axios.get(url);
+      allGames = allGames.concat(gamesRes.data.games);
+    }
 
-    // return simplified list
-    const simplified = games.map(g => ({
+    // newest first
+    allGames.sort((a, b) => b.end_time - a.end_time);
+
+    // limit to 15
+    const latest15 = allGames.slice(0, 15);
+
+    // simplify
+    const simplified = latest15.map(g => {
+    const player = username.toLowerCase();
+
+    const isWhite = g.white.username.toLowerCase() === player;
+    const playerResult = isWhite ? g.white.result : g.black.result;
+
+    let resultLabel = "Draw";
+
+    if (playerResult === "win") resultLabel = "Win";
+    else if (["checkmated", "resigned", "timeout", "lose"].includes(playerResult))
+      resultLabel = "Loss";
+
+    return {
       white: g.white.username,
       black: g.black.username,
-      result: g.white.result,
+      result: resultLabel,
       date: g.end_time,
       pgn: g.pgn
-    }));
+    };
+  });
 
     res.json(simplified);
 

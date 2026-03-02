@@ -1,60 +1,83 @@
 <div class="container">
 
-  <h2>Chess Player Search</h2>
+<div class="layout">
 
-  <input
-    [ngModel]="username()"
-    (ngModelChange)="username.set($event)"
-    placeholder="Enter Chess.com username"
-  >
-  <button (click)="search()">Search</button>
+  <!-- LEFT: PLAYER -->
+  <div class="player-panel">
 
-  @if (error()) {
-    <div class="error">
-      {{ error() }}
-    </div>
-  }
+    <h2>Chess Player Search</h2>
 
-  @if (player()) {
-    <div class="player-card">
-      <h3>
-        {{ player().username }}
-        @if (player().title) {
-          ({{ player().title }})
+    <input
+      [ngModel]="username()"
+      (ngModelChange)="username.set($event)"
+      placeholder="Enter Chess.com username"
+    >
+    <button (click)="search()">Search</button>
+
+    @if (error()) {
+      <div class="error">
+        {{ error() }}
+      </div>
+    }
+
+    @if (player()) {
+      <div class="player-card">
+        <h3>
+          {{ player().username }}
+          @if (player().title) { ({{ player().title }}) }
+        </h3>
+
+        @if (player().avatar) {
+          <img [src]="player().avatar" width="120">
         }
-      </h3>
 
-      @if (player().avatar) {
-        <img [src]="player().avatar" width="100">
-      }
+        <p>Name: {{ player().name || 'N/A' }}</p>
+        <p>Country: {{ player().country }}</p>
 
-      <p>Name: {{ player().name || 'N/A' }}</p>
-      <p>Country: {{ player().country }}</p>
-    </div>
-  }
+        @if (stats()) {
+          <div class="stats">
+            <h4>Ratings</h4>
+            <p>Blitz: {{ stats().blitz }}</p>
+            <p>Rapid: {{ stats().rapid }}</p>
+            <p>Bullet: {{ stats().bullet }}</p>
+          </div>
+        }
+      </div>
+    }
 
-  @if (stats()) {
-    <div class="stats">
-      <h4>Ratings</h4>
-      <p>Blitz: {{ stats().blitz }}</p>
-      <p>Rapid: {{ stats().rapid }}</p>
-      <p>Bullet: {{ stats().bullet }}</p>
-    </div>
-  }
+  </div>
 
-  @if (games().length > 0) {
-    <div class="games">
-        <h4>Recent Games</h4>
+  <!-- RIGHT: GAMES -->
+  <div class="games-panel">
 
-        <ul>
+    @if (games().length > 0) {
+      <h3>Recent Games</h3>
+
+      <div class="games-list">
         @for (game of games(); track game) {
-            <li>
-            {{ game.white }} vs {{ game.black }}
-            ({{ game.result }})
-            </li>
-        }
-        </ul>
-    </div>
-  }
+        <div
+          class="game-item"
+          [class.selected]="selectedGame() === game"
+          (click)="selectGame(game)"
+        >
+          <span class="white">{{ game.white }}</span>
+          <span class="vs">vs</span>
+          <span class="black">{{ game.black }}</span>
+          <span
+            class="result"
+            [class.win]="game.result === 'Win'"
+            [class.loss]="game.result === 'Loss'"
+            [class.draw]="game.result === 'Draw'"
+          >
+            {{ game.result }}
+          </span>
+        </div>
+      }
+      </div>
+    }
+
+  </div>
+
+</div>
 
 </div>
