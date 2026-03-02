@@ -1,0 +1,21 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ChessService {
+
+  private apiBase = 'http://localhost:3000/api';
+
+  constructor(private http: HttpClient) {}
+
+  getPlayer(username: string): Observable<any> {
+    return this.http.get(`${this.apiBase}/player/${username}`);
+  }
+
+  getPlayerStats(username: string): Observable<any> {
+    return this.http.get(`${this.apiBase}/player/${username}/stats`);
+  }
+}

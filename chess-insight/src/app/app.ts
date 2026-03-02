@@ -1,9 +1,9 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { PlayerSearchComponent } from './components/player-search/player-search';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [PlayerSearchComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
