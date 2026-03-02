@@ -2,25 +2,59 @@
 
   <h2>Chess Player Search</h2>
 
-  <input [(ngModel)]="username" placeholder="Enter Chess.com username">
+  <input
+    [ngModel]="username()"
+    (ngModelChange)="username.set($event)"
+    placeholder="Enter Chess.com username"
+  >
   <button (click)="search()">Search</button>
 
-  <div *ngIf="error" class="error">
-    {{ error }}
-  </div>
+  @if (error()) {
+    <div class="error">
+      {{ error() }}
+    </div>
+  }
 
-  <div *ngIf="player" class="player-card">
-    <h3>{{ player.username }} <span *ngIf="player.title">({{ player.title }})</span></h3>
-    <img *ngIf="player.avatar" [src]="player.avatar" width="100">
-    <p>Name: {{ player.name || 'N/A' }}</p>
-    <p>Country: {{ player.country }}</p>
-  </div>
+  @if (player()) {
+    <div class="player-card">
+      <h3>
+        {{ player().username }}
+        @if (player().title) {
+          ({{ player().title }})
+        }
+      </h3>
 
-  <div *ngIf="stats" class="stats">
-    <h4>Ratings</h4>
-    <p>Blitz: {{ stats.blitz }}</p>
-    <p>Rapid: {{ stats.rapid }}</p>
-    <p>Bullet: {{ stats.bullet }}</p>
-  </div>
+      @if (player().avatar) {
+        <img [src]="player().avatar" width="100">
+      }
+
+      <p>Name: {{ player().name || 'N/A' }}</p>
+      <p>Country: {{ player().country }}</p>
+    </div>
+  }
+
+  @if (stats()) {
+    <div class="stats">
+      <h4>Ratings</h4>
+      <p>Blitz: {{ stats().blitz }}</p>
+      <p>Rapid: {{ stats().rapid }}</p>
+      <p>Bullet: {{ stats().bullet }}</p>
+    </div>
+  }
+
+  @if (games().length > 0) {
+    <div class="games">
+        <h4>Recent Games</h4>
+
+        <ul>
+        @for (game of games(); track game) {
+            <li>
+            {{ game.white }} vs {{ game.black }}
+            ({{ game.result }})
+            </li>
+        }
+        </ul>
+    </div>
+  }
 
 </div>

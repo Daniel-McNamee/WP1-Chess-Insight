@@ -18,4 +18,9 @@ export class ChessService {
   getPlayerStats(username: string): Observable<any> {
     return this.http.get(`${this.apiBase}/player/${username}/stats`);
   }
+
+  getPlayerGames(username: string) {
+  return this.http.get<any[]>(`${this.apiBase}/player/${username}/games`);
+  }
+
 }
