@@ -1,0 +1,14 @@
+<div class="viewer">
+
+<chess-board
+  [attr.position]="currentFen()"
+  style="width: 600px;">
+</chess-board>
+
+  <div class="controls">
+    <button (click)="prevMove()">◀</button>
+    <button (click)="nextMove()">▶</button>
+    <button (click)="reset()">Reset</button>
+  </div>
+
+</div>

@@ -50,30 +50,49 @@
   <!-- RIGHT: GAMES -->
   <div class="games-panel">
 
-    @if (games().length > 0) {
-      <h3>Recent Games</h3>
+    @if (!replayMode()) {
 
-      <div class="games-list">
-        @for (game of games(); track game) {
-        <div
-          class="game-item"
-          [class.selected]="selectedGame() === game"
-          (click)="selectGame(game)"
-        >
-          <span class="white">{{ game.white }}</span>
-          <span class="vs">vs</span>
-          <span class="black">{{ game.black }}</span>
-          <span
-            class="result"
-            [class.win]="game.result === 'Win'"
-            [class.loss]="game.result === 'Loss'"
-            [class.draw]="game.result === 'Draw'"
-          >
-            {{ game.result }}
-          </span>
+      @if (games().length > 0) {
+        <h3>Recent Games</h3>
+
+        <div class="games-list">
+          @for (game of games(); track game) {
+            <div
+              class="game-item"
+              [class.selected]="selectedGame() === game"
+              (click)="selectGame(game)"
+            >
+              <span class="white">{{ game.white }}</span>
+              <span class="vs">vs</span>
+              <span class="black">{{ game.black }}</span>
+
+              <span
+                class="result"
+                [class.win]="game.result === 'Win'"
+                [class.loss]="game.result === 'Loss'"
+                [class.draw]="game.result === 'Draw'"
+              >
+                {{ game.result }}
+              </span>
+            </div>
+          }
         </div>
+
+        @if (selectedGame()) {
+          <button (click)="startReplay()" style="margin-top: 10px;">
+            Replay Game
+          </button>
+        }
       }
-      </div>
+
+    }
+
+    @if (replayMode()) {
+      <button (click)="exitReplay()" style="margin-bottom: 10px;">
+        ← Back to Games
+      </button>
+
+      <app-game-viewer [game]="selectedGame()"></app-game-viewer>
     }
 
   </div>

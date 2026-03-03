@@ -1,11 +1,12 @@
 import { Component, signal } from '@angular/core';
 import { ChessService } from '../../services/chess';
+import { GameViewerComponent } from '../game-viewer/game-viewer';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-player-search',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, GameViewerComponent ],
   templateUrl: './player-search.html',
   styleUrl: './player-search.css'
 })
@@ -16,6 +17,7 @@ export class PlayerSearchComponent {
   stats = signal<any | null>(null);
   games = signal<any[]>([]);
   selectedGame = signal<any | null>(null);
+  replayMode = signal(false);
   error = signal<string | null>(null);
 
   selectGame(game: any) {
@@ -46,4 +48,14 @@ export class PlayerSearchComponent {
     });
 
   }
+
+  startReplay() {
+    if (!this.selectedGame()) return;
+    this.replayMode.set(true);
+  }
+
+  exitReplay() {
+    this.replayMode.set(false);
+  }
+
 }
