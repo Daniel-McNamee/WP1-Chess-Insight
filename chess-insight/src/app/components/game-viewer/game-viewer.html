@@ -1,14 +1,59 @@
-<div class="viewer">
+<div class="viewer-container">
 
-<chess-board
-  [attr.position]="currentFen()"
-  style="width: 600px;">
-</chess-board>
+  <!-- Board -->
+  <div class="board-wrapper">
+    <div class="viewer">
+      <div class="board">
 
-  <div class="controls">
-    <button (click)="prevMove()">◀</button>
-    <button (click)="nextMove()">▶</button>
-    <button (click)="reset()">Reset</button>
+        <chess-board
+          [attr.position]="currentFen()"
+          style="width: 600px;">
+        </chess-board>
+
+        <div class="controls">
+          <button class="app-button" (click)="goToStart()">⏮</button>
+          <button class="app-button" (click)="prevMove()">◀</button>
+          <button class="app-button" (click)="nextMove()">▶</button>
+          <button class="app-button" (click)="goToEnd()">⏭</button>
+          <button class="app-button" (click)="reset()">Reset</button>
+        </div>
+      </div>
+
+      <!-- Moves List -->
+      <div class="moves" #movesContainer>
+
+        <h3>Moves</h3>
+
+        @for (pair of movePairs(); track $index; let i = $index) {
+
+          <div class="move-row" #moveRow>
+
+            <span class="move-number">
+              {{ i + 1 }}.
+            </span>
+
+            <span
+              class="move"
+              (click)="goToMove(i * 2)"
+              [class.active]="moveIndex() === i * 2 + 1"
+            >
+              {{ pair.white }}
+            </span>
+
+            @if (pair.black) {
+              <span
+                class="move"
+                (click)="goToMove(i * 2 + 1)"
+                [class.active]="moveIndex() === i * 2 + 2"
+              >
+                {{ pair.black }}
+              </span>
+            }
+
+          </div>
+        }
+        
+      </div>
+    </div>
   </div>
-
 </div>

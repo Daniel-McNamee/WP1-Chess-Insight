@@ -3,18 +3,53 @@
 }
 
 .layout {
-  display: flex;
-  gap: 24px;
-  padding: 20px;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 40px;
+  padding: 30px;
+  align-items: start;
 }
 
 .player-panel {
-  width: 320px;
+  width: 420px;
+  font-size: 22px;
+  line-height: 1.4;
+}
+
+.player-panel input {
+  font-size: 16px;
+  padding: 8px 10px;
+  width: 220px;
+}
+
+.player-panel button {
+  font-size: 16px;
+  padding: 8px 14px;
+  margin-left: 6px;
+}
+
+.player-avatar {
+  width: 150px;
+  margin: 12px 0;
+}
+
+.player-panel h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.player-panel h3 {
+  font-size: 24px;
+}
+
+.player-panel h4 {
+  font-size: 20px;
+  margin-top: 10px;
 }
 
 .games-panel {
   flex: 1;
+  min-width: 600px;
 }
 
 .games-list {
@@ -70,4 +105,14 @@
 
 .result.draw {
   color: #616161;
+}
+
+.app-button {
+  font-size: 18px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.back-button {
+  margin-bottom: 12px;
 }

@@ -2,7 +2,7 @@
 
 <div class="layout">
 
-  <!-- LEFT: PLAYER -->
+  <!-- Player Search/Info -->
   <div class="player-panel">
 
     <h2>Chess Player Search</h2>
@@ -28,7 +28,7 @@
         </h3>
 
         @if (player().avatar) {
-          <img [src]="player().avatar" width="120">
+          <img [src]="player().avatar" class="player-avatar">
         }
 
         <p>Name: {{ player().name || 'N/A' }}</p>
@@ -47,7 +47,7 @@
 
   </div>
 
-  <!-- RIGHT: GAMES -->
+  <!-- Games List -->
   <div class="games-panel">
 
     @if (!replayMode()) {
@@ -79,7 +79,7 @@
         </div>
 
         @if (selectedGame()) {
-          <button (click)="startReplay()" style="margin-top: 10px;">
+          <button class="app-button" (click)="startReplay()" style="margin-top: 10px;">
             Replay Game
           </button>
         }
@@ -88,7 +88,7 @@
     }
 
     @if (replayMode()) {
-      <button (click)="exitReplay()" style="margin-bottom: 10px;">
+      <button class="app-button back-button" (click)="exitReplay()">
         ← Back to Games
       </button>
 
@@ -96,7 +96,5 @@
     }
 
   </div>
-
 </div>
-
 </div>

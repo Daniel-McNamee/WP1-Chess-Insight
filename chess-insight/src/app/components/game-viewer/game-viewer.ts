@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import 'chessboard-element';
 import { Chess } from 'chess.js';
+import { ViewChildren, QueryList, ElementRef } from '@angular/core';
 
 @Component({
   selector: 'app-game-viewer',
@@ -19,8 +20,10 @@ export class GameViewerComponent {
   chess = new Chess();
 
   moves = signal<string[]>([]);
+  movePairs = signal<{ white?: string; black?: string }[]>([]);
   moveIndex = signal(0);
   currentFen = signal(this.chess.fen());
+  @ViewChildren('moveRow') moveRows!: QueryList<ElementRef>;
 
   constructor() {
     effect(() => {
@@ -44,6 +47,18 @@ export class GameViewerComponent {
     this.moves.set(history);
     this.moveIndex.set(0);
 
+    // Build move pairs
+    const pairs: { white?: string; black?: string }[] = [];
+
+    for (let i = 0; i < history.length; i += 2) {
+      pairs.push({
+        white: history[i],
+        black: history[i + 1]
+      });
+    }
+
+    this.movePairs.set(pairs);
+
     this.chess.reset();
     this.currentFen.set(this.chess.fen());
   }
@@ -55,6 +70,7 @@ export class GameViewerComponent {
     this.chess.move(this.moves()[index]);
     this.moveIndex.set(index + 1);
     this.currentFen.set(this.chess.fen());
+    setTimeout(() => this.scrollToCurrentMove());
   }
 
   prevMove() {
@@ -63,6 +79,25 @@ export class GameViewerComponent {
     this.chess.undo();
     this.moveIndex.set(this.moveIndex() - 1);
     this.currentFen.set(this.chess.fen());
+    setTimeout(() => this.scrollToCurrentMove());
+  }
+
+  goToStart() {
+    this.chess.reset();
+    this.moveIndex.set(0);
+    this.currentFen.set(this.chess.fen());
+  }
+
+  goToEnd() {
+    this.chess.reset();
+    const moves = this.moves();
+
+    for (let move of moves) {
+      this.chess.move(move);
+    }
+
+    this.moveIndex.set(moves.length);
+    this.currentFen.set(this.chess.fen());
   }
 
   reset() {
@@ -70,4 +105,31 @@ export class GameViewerComponent {
     this.moveIndex.set(0);
     this.currentFen.set(this.chess.fen());
   }
+
+  goToMove(index: number) {
+    this.chess.reset();
+    const moves = this.moves();
+
+    for (let i = 0; i <= index; i++) {
+      this.chess.move(moves[i]);
+    }
+
+    this.moveIndex.set(index + 1);
+    this.currentFen.set(this.chess.fen());
+    setTimeout(() => this.scrollToCurrentMove());
+  }
+
+  scrollToCurrentMove() {
+    const move = this.moveIndex();
+    if (move === 0) return;
+    const rowIndex = Math.floor((move - 1) / 2);
+    const rows = this.moveRows.toArray();
+    if (!rows[rowIndex]) return;
+
+    rows[rowIndex].nativeElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center'
+    });
+  }
+
 }
