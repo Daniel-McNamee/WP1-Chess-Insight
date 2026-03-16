@@ -16,6 +16,8 @@ import { ViewChildren, QueryList, ElementRef } from '@angular/core';
 export class GameViewerComponent {
 
   @Input() game: any;
+  @ViewChildren('moveRow') moveRows!: QueryList<ElementRef>;
+  @Input() playerUsername!: string;
 
   chess = new Chess();
 
@@ -23,7 +25,7 @@ export class GameViewerComponent {
   movePairs = signal<{ white?: string; black?: string }[]>([]);
   moveIndex = signal(0);
   currentFen = signal(this.chess.fen());
-  @ViewChildren('moveRow') moveRows!: QueryList<ElementRef>;
+  orientation = signal<'white' | 'black'>('white');
 
   constructor() {
     effect(() => {
@@ -46,6 +48,15 @@ export class GameViewerComponent {
 
     this.moves.set(history);
     this.moveIndex.set(0);
+
+    // Determine orientation
+    const username = this.playerUsername?.toLowerCase();
+
+    if (this.game?.black?.toLowerCase() === username) {
+      this.orientation.set('black');
+    } else {
+      this.orientation.set('white');
+    }
 
     // Build move pairs
     const pairs: { white?: string; black?: string }[] = [];

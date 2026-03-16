@@ -92,7 +92,10 @@
         ← Back to Games
       </button>
 
-      <app-game-viewer [game]="selectedGame()"></app-game-viewer>
+      <app-game-viewer
+        [game]="selectedGame()"
+        [playerUsername]="player()?.username">
+      </app-game-viewer>
     }
 
   </div>
