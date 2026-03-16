@@ -1,9 +1,9 @@
-import { Component, Input, signal, effect } from '@angular/core';
+import { Component, Input, signal, effect, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import 'chessboard-element';
 import { Chess } from 'chess.js';
-import { ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { ViewChildren, QueryList, ElementRef, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-game-viewer',
@@ -13,10 +13,11 @@ import { ViewChildren, QueryList, ElementRef } from '@angular/core';
   styleUrl: './game-viewer.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA] 
 })
-export class GameViewerComponent {
+export class GameViewerComponent implements AfterViewInit {
 
   @Input() game: any;
   @ViewChildren('moveRow') moveRows!: QueryList<ElementRef>;
+  @ViewChild('board') board!: ElementRef;
   @Input() playerUsername!: string;
 
   chess = new Chess();
@@ -26,6 +27,7 @@ export class GameViewerComponent {
   moveIndex = signal(0);
   currentFen = signal(this.chess.fen());
   orientation = signal<'white' | 'black'>('white');
+  highlightSquares = signal<string>('');
 
   constructor() {
     effect(() => {
@@ -36,6 +38,10 @@ export class GameViewerComponent {
     });
   }
 
+  ngAfterViewInit() {
+    this.injectHighlightStyles();
+  }
+
   loadGame(pgn: string) {
     this.chess.reset();
 
@@ -44,9 +50,11 @@ export class GameViewerComponent {
 
     this.chess.loadPgn(cleanedPgn);
 
-    const history = this.chess.history();
+    const history = this.chess.history({ verbose: true });
 
-    this.moves.set(history);
+    const sanMoves = history.map(m => m.san);
+
+    this.moves.set(sanMoves);
     this.moveIndex.set(0);
 
     // Determine orientation
@@ -61,10 +69,10 @@ export class GameViewerComponent {
     // Build move pairs
     const pairs: { white?: string; black?: string }[] = [];
 
-    for (let i = 0; i < history.length; i += 2) {
+    for (let i = 0; i < sanMoves.length; i += 2) {
       pairs.push({
-        white: history[i],
-        black: history[i + 1]
+        white: sanMoves[i],
+        black: sanMoves[i + 1]
       });
     }
 
@@ -78,18 +86,26 @@ export class GameViewerComponent {
     const index = this.moveIndex();
     if (index >= this.moves().length) return;
 
-    this.chess.move(this.moves()[index]);
+    const move = this.chess.move(this.moves()[index]);
     this.moveIndex.set(index + 1);
     this.currentFen.set(this.chess.fen());
+    this.updateHighlight(move);
     setTimeout(() => this.scrollToCurrentMove());
   }
 
   prevMove() {
     if (this.moveIndex() === 0) return;
-
     this.chess.undo();
-    this.moveIndex.set(this.moveIndex() - 1);
+
+    const newIndex = this.moveIndex() - 1;
+    this.moveIndex.set(newIndex);
+
     this.currentFen.set(this.chess.fen());
+
+    const history = this.chess.history({ verbose: true });
+    const lastMove = history[history.length - 1];
+    this.updateHighlight(lastMove);
+
     setTimeout(() => this.scrollToCurrentMove());
   }
 
@@ -115,6 +131,8 @@ export class GameViewerComponent {
     this.chess.reset();
     this.moveIndex.set(0);
     this.currentFen.set(this.chess.fen());
+    const boardEl = this.board?.nativeElement;
+    boardEl?.removeMarkers();
   }
 
   goToMove(index: number) {
@@ -141,6 +159,62 @@ export class GameViewerComponent {
       behavior: 'smooth',
       block: 'center'
     });
+  }
+
+  updateHighlight(move: any) {
+    const boardEl = this.board?.nativeElement;
+    if (!boardEl) return;
+
+    const shadow = boardEl.shadowRoot;
+    if (!shadow) return;
+
+    // remove previous highlights
+    shadow.querySelectorAll('.last-move-from, .last-move-to').forEach((el: Element) => {
+      el.classList.remove('last-move-from');
+      el.classList.remove('last-move-to');
+    });
+
+    if (!move) return;
+    const fromSquare = shadow.querySelector(`[data-square="${move.from}"]`);
+    const toSquare = shadow.querySelector(`[data-square="${move.to}"]`);
+
+    fromSquare?.classList.add('last-move-from');
+    toSquare?.classList.add('last-move-to');
+  }
+
+  injectHighlightStyles() {
+    const boardEl = this.board?.nativeElement;
+    if (!boardEl) return;
+
+    const shadow = boardEl.shadowRoot;
+    if (!shadow) return;
+
+    if (shadow.querySelector('#highlight-style')) return;
+
+    const style = document.createElement('style');
+    style.id = 'highlight-style';
+
+    style.textContent = `
+      @keyframes movePulse {
+        0% {
+          box-shadow: inset 0 0 0 0px rgba(30,136,229,0.9);
+          background: rgba(30,136,229,0.55);
+        }
+        100% {
+          box-shadow: inset 0 0 0 5px #1e88e5;
+          background: rgba(30,136,229,0.35);
+        }
+      }
+
+      .last-move-from,
+      .last-move-to {
+        box-shadow: inset 0 0 0 5px #1e88e5;
+        background: rgba(30,136,229,0.35);
+        animation: movePulse 220ms ease-out;
+      }
+    `;
+
+    shadow.appendChild(style);
   }
 
 }
