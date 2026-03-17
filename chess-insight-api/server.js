@@ -117,6 +117,49 @@ app.get("/api/player/:username/games", async (req, res) => {
 });
 
 
+// Endpoint used to search for player username suggestions
+app.get('/api/players/search/:query', async (req, res) => {
+
+  // Convert the search query to lowercase so the match is not case sensitive
+  const query = req.params.query.toLowerCase();
+
+  try {
+
+    // Request leaderboard data from API
+    const response = await fetch('https://api.chess.com/pub/leaderboards');
+    const data = await response.json();
+
+    // Array to store usernames that match query
+    const players = [];
+
+    // Loop through leaderboard categories returned by the API
+    Object.values(data).forEach(board => {
+
+      // Each leaderboard contains a list of player objects
+      board.forEach(player => {
+
+        // Check if the player's username contains the search text
+        if (player.username.toLowerCase().includes(query)) {
+
+          // If it matches add the username to the results list
+          players.push(player.username);
+        
+        }
+      });
+    });
+
+    // Remove duplicate usernames and limit the results to ten suggestions
+    const unique = [...new Set(players)].slice(0, 10);
+
+    // Send the suggestions back to the frontend
+    res.json(unique);
+
+  } catch (err) {
+    // If the request fails return an error
+    res.status(500).json({ error: 'Search failed' });
+  }
+});
+
 
 app.listen(PORT, () => {
   console.log(`API running on http://localhost:${PORT}`);

@@ -9,10 +9,25 @@
 
     <input
       [ngModel]="username()"
-      (ngModelChange)="username.set($event)"
+      (ngModelChange)="onUsernameChange($event)"
       placeholder="Enter Chess.com username"
     >
     <button (click)="search()">Search</button>
+
+    @if (suggestions().length > 0) {
+      <div class="suggestions">
+
+        @for (player of suggestions(); track player) {
+
+          <div
+            class="suggestion-item"
+            (click)="selectSuggestion(player)"
+          >
+            {{ player }}
+          </div>
+        }
+      </div>
+    }
 
     @if (error()) {
       <div class="error">

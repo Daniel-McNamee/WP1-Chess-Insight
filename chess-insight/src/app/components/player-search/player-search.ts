@@ -19,6 +19,7 @@ export class PlayerSearchComponent {
   selectedGame = signal<any | null>(null);
   replayMode = signal(false);
   error = signal<string | null>(null);
+  suggestions = signal<string[]>([]);
 
   selectGame(game: any) {
   this.selectedGame.set(game);
@@ -56,6 +57,25 @@ export class PlayerSearchComponent {
 
   exitReplay() {
     this.replayMode.set(false);
+  }
+
+  onUsernameChange(value: string) {
+    this.username.set(value);
+
+    if (value.length < 2) {
+      this.suggestions.set([]);
+      return;
+    }
+
+    this.chessService.searchPlayers(value).subscribe(players => {
+      this.suggestions.set(players);
+    });
+  }
+
+  selectSuggestion(username: string) {
+    this.username.set(username);
+    this.suggestions.set([]);
+    this.search();
   }
 
 }

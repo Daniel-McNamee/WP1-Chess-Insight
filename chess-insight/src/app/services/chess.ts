@@ -23,4 +23,8 @@ export class ChessService {
   return this.http.get<any[]>(`${this.apiBase}/player/${username}/games`);
   }
 
+  searchPlayers(query: string) {
+    return this.http.get<string[]>(`http://localhost:3000/api/players/search/${query}`);
+  }
+
 }
