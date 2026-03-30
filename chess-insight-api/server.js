@@ -53,67 +53,66 @@ app.get("/api/player/:username/stats", async (req, res) => {
   }
 });
 
-
-// GET recent games (last 15)
-app.get("/api/player/:username/games", async (req, res) => {
+// GET archives list
+app.get("/api/player/:username/archives", async (req, res) => {
   const { username } = req.params;
 
   try {
-    // get archive list
-    const archivesRes = await axios.get(
+    const response = await axios.get(
       `https://api.chess.com/pub/player/${username}/games/archives`
     );
 
-    const archives = archivesRes.data.archives;
+    const archives = response.data.archives;
 
-    if (!archives || archives.length === 0) {
-      return res.json([]);
-    }
+    const formatted = archives.map(url => {
+      const parts = url.split('/');
+      const year = parts[parts.length - 2];
+      const month = parts[parts.length - 1];
 
-    // take last 3 months 
-    const recentArchives = archives.slice(-3);
+      return {
+        url,
+        label: `${year}-${month}`
+      };
+    });
 
-    let allGames = [];
+    res.json(formatted.reverse()); // newest first
+  } catch (error) {
+    res.status(404).json({ error: "Archives not found" });
+  }
+});
 
-    // fetch each archive
-    for (const url of recentArchives) {
-      const gamesRes = await axios.get(url);
-      allGames = allGames.concat(gamesRes.data.games);
-    }
+// GET games for specific archive
+app.get("/api/archive", async (req, res) => {
+  const { url, username } = req.query;
 
-    // newest first
-    allGames.sort((a, b) => b.end_time - a.end_time);
+  try {
+    const gamesRes = await axios.get(url);
+    const games = gamesRes.data.games;
 
-    // limit to 150
-    const latest150 = allGames.slice(0, 150);
+    const simplified = games.map(g => {
+      const player = username.toLowerCase();
+      const isWhite = g.white.username.toLowerCase() === player;
+      const playerResult = isWhite ? g.white.result : g.black.result;
 
-    // simplify
-    const simplified = latest150.map(g => {
-    const player = username.toLowerCase();
+      let resultLabel = "Draw";
 
-    const isWhite = g.white.username.toLowerCase() === player;
-    const playerResult = isWhite ? g.white.result : g.black.result;
+      if (playerResult === "win") resultLabel = "Win";
+      else if (["checkmated", "resigned", "timeout", "lose"].includes(playerResult))
+        resultLabel = "Loss";
 
-    let resultLabel = "Draw";
-
-    if (playerResult === "win") resultLabel = "Win";
-    else if (["checkmated", "resigned", "timeout", "lose"].includes(playerResult))
-      resultLabel = "Loss";
-
-    return {
-      white: g.white.username,
-      black: g.black.username,
-      result: resultLabel,
-      date: g.end_time,
-      pgn: g.pgn,
-      timeClass: g.time_class
-    };
-  });
+      return {
+        white: g.white.username,
+        black: g.black.username,
+        result: resultLabel,
+        date: g.end_time,
+        pgn: g.pgn,
+        timeClass: g.time_class
+      };
+    });
 
     res.json(simplified);
-
   } catch (error) {
-    res.status(404).json({ error: "Games not found" });
+    res.status(404).json({ error: "Archive not found" });
   }
 });
 
@@ -160,7 +159,6 @@ app.get('/api/players/search/:query', async (req, res) => {
     res.status(500).json({ error: 'Search failed' });
   }
 });
-
 
 app.listen(PORT, () => {
   console.log(`API running on http://localhost:${PORT}`);

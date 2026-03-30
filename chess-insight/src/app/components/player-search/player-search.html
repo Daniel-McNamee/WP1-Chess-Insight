@@ -67,6 +67,22 @@
 
     @if (!replayMode()) {
 
+      @if (archives().length > 0) {
+        <div class="archive-select">
+          <label>Select Month: </label>
+          <select (change)="onArchiveChange($event)">
+            @for (archive of archives(); track archive.url) {
+              <option
+                [value]="archive.url"
+                [selected]="archive.url === selectedArchive()?.url"
+              >
+                {{ archive.label }}
+              </option>
+            }
+          </select>
+        </div>
+      }
+
       @if (games().length > 0 || loadingGames()) {
         <h3>Recent Games</h3>
         <div class="filters">
@@ -81,6 +97,7 @@
             Loading games...
           </div>
         }
+
         <div class="games-list">
           @for (game of pagedGames(); track game) {
             <div
@@ -118,6 +135,7 @@
 
     }
 
+    <!-- Replay Mode -->
     @if (replayMode()) {
       <button class="app-button back-button" (click)="exitReplay()">
         ← Back to Games

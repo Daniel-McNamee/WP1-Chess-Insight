@@ -27,4 +27,14 @@ export class ChessService {
     return this.http.get<string[]>(`http://localhost:3000/api/players/search/${query}`);
   }
 
+  getArchives(username: string) {
+    return this.http.get<any[]>(`http://localhost:3000/api/player/${username}/archives`);
+  }
+
+  getArchiveGames(url: string, username: string) {
+    return this.http.get<any[]>(
+      `http://localhost:3000/api/archive?url=${encodeURIComponent(url)}&username=${username}`
+    );
+  }
+
 }

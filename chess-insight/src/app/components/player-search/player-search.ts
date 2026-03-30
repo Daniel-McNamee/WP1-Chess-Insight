@@ -15,6 +15,8 @@ export class PlayerSearchComponent {
   username = signal('');
   player = signal<any | null>(null);
   stats = signal<any | null>(null);
+  archives = signal<any[]>([]);
+  selectedArchive = signal<any>(null);
   games = signal<any[]>([]);
   selectedGame = signal<any | null>(null);
   replayMode = signal(false);
@@ -39,7 +41,6 @@ export class PlayerSearchComponent {
 
     this.loadingGames.set(true);
 
-    // Reset filters and pagination when new player loaded
     this.gameFilter.set('all');
     this.currentPage.set(1);
     this.selectedGame.set(null);
@@ -57,13 +58,43 @@ export class PlayerSearchComponent {
       next: data => this.stats.set(data)
     });
 
-    this.chessService.getPlayerGames(name).subscribe({
+    // Load archives
+    this.chessService.getArchives(name).subscribe({
+      next: data => {
+        this.archives.set(data);
+
+        if (data.length > 0) {
+          this.selectedArchive.set(data[0]);
+          this.loadArchiveGames(data[0].url);
+        }
+      }
+    });
+  }
+
+  loadArchiveGames(url: string) {
+    this.loadingGames.set(true);
+
+    this.gameFilter.set('all');
+    this.currentPage.set(1);
+    this.selectedGame.set(null);
+
+    const username = this.player()?.username;
+
+    this.chessService.getArchiveGames(url, username).subscribe({
       next: data => {
         this.games.set(data);
         this.loadingGames.set(false);
       }
     });
-    
+  }
+
+  onArchiveChange(event: any) {
+    const url = event.target.value;
+
+    const archive = this.archives().find(a => a.url === url);
+    this.selectedArchive.set(archive);
+
+    this.loadArchiveGames(url);
   }
 
   startReplay() {
