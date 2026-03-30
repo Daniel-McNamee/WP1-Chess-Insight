@@ -67,11 +67,22 @@
 
     @if (!replayMode()) {
 
-      @if (games().length > 0) {
+      @if (games().length > 0 || loadingGames()) {
         <h3>Recent Games</h3>
+        <div class="filters">
+          <button (click)="setFilter('all')">All</button>
+          <button (click)="setFilter('blitz')">Blitz</button>
+          <button (click)="setFilter('rapid')">Rapid</button>
+          <button (click)="setFilter('bullet')">Bullet</button>
+        </div>
 
+        @if (loadingGames()) {
+          <div class="loading-box">
+            Loading games...
+          </div>
+        }
         <div class="games-list">
-          @for (game of games(); track game) {
+          @for (game of pagedGames(); track game) {
             <div
               class="game-item"
               [class.selected]="selectedGame() === game"
@@ -98,6 +109,11 @@
             Replay Game
           </button>
         }
+        <div class="pagination">
+          <button (click)="prevPage()" [disabled]="currentPage() === 1">Previous</button>
+          <span>Page {{ currentPage() }} of {{ totalPages() }}</span>
+          <button (click)="nextPage()" [disabled]="currentPage() * gamesPerPage >= filteredGames().length">Next</button>
+        </div>
       }
 
     }

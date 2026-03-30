@@ -84,11 +84,11 @@ app.get("/api/player/:username/games", async (req, res) => {
     // newest first
     allGames.sort((a, b) => b.end_time - a.end_time);
 
-    // limit to 15
-    const latest15 = allGames.slice(0, 15);
+    // limit to 150
+    const latest150 = allGames.slice(0, 150);
 
     // simplify
-    const simplified = latest15.map(g => {
+    const simplified = latest150.map(g => {
     const player = username.toLowerCase();
 
     const isWhite = g.white.username.toLowerCase() === player;
@@ -105,7 +105,8 @@ app.get("/api/player/:username/games", async (req, res) => {
       black: g.black.username,
       result: resultLabel,
       date: g.end_time,
-      pgn: g.pgn
+      pgn: g.pgn,
+      timeClass: g.time_class
     };
   });
 
