@@ -113,6 +113,7 @@ export class GameViewerComponent implements AfterViewInit {
     this.chess.reset();
     this.moveIndex.set(0);
     this.currentFen.set(this.chess.fen());
+    this.updateHighlight(null);
   }
 
   goToEnd() {
@@ -125,14 +126,8 @@ export class GameViewerComponent implements AfterViewInit {
 
     this.moveIndex.set(moves.length);
     this.currentFen.set(this.chess.fen());
-  }
 
-  reset() {
-    this.chess.reset();
-    this.moveIndex.set(0);
-    this.currentFen.set(this.chess.fen());
-    const boardEl = this.board?.nativeElement;
-    boardEl?.removeMarkers();
+    this.updateHighlightFromHistory();
   }
 
   goToMove(index: number) {
@@ -145,6 +140,9 @@ export class GameViewerComponent implements AfterViewInit {
 
     this.moveIndex.set(index + 1);
     this.currentFen.set(this.chess.fen());
+
+    this.updateHighlightFromHistory();
+
     setTimeout(() => this.scrollToCurrentMove());
   }
 
@@ -180,6 +178,12 @@ export class GameViewerComponent implements AfterViewInit {
 
     fromSquare?.classList.add('last-move-from');
     toSquare?.classList.add('last-move-to');
+  }
+
+  updateHighlightFromHistory() {
+    const history = this.chess.history({ verbose: true });
+    const lastMove = history[history.length - 1];
+    this.updateHighlight(lastMove);
   }
 
   injectHighlightStyles() {
