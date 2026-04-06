@@ -1,10 +1,10 @@
 <div class="viewer-container">
 
-  <!-- Board -->
-  <div class="board-wrapper">
-    <div class="viewer">
-      <div class="board">
+  <div class="viewer">
 
+    <!-- Board -->
+    <div class="board-wrapper">
+      <div class="board">
         <chess-board
           #board
           [attr.position]="currentFen()"
@@ -12,6 +12,7 @@
           style="width: 600px;">
         </chess-board>
 
+        <!-- Controls -->
         <div class="controls">
           <button class="app-button" (click)="goToStart()">⏮</button>
           <button class="app-button" (click)="prevMove()">◀</button>
@@ -19,23 +20,27 @@
           <button class="app-button" (click)="goToEnd()">⏭</button>
         </div>
       </div>
+    </div>
 
-      <!-- Moves List -->
-      <div class="moves" #movesContainer>
+    <!-- Moves List -->
+    <div class="moves">
 
-        <h3>Moves</h3>
+      <div class="moves-header">
+        <div class="moves-title">Moves</div>
+        <div class="notes-title">Notes</div>
+      </div>
 
-        @for (pair of movePairs(); track $index; let i = $index) {
+      <!-- Move Rows -->
+      @for (pair of movePairs(); track $index; let i = $index) {
+        <div class="move-row" #moveRow>
 
-          <div class="move-row" #moveRow>
-
-            <span class="move-number">
-              {{ i + 1 }}.
-            </span>
+          <!-- Move Cell -->
+          <div class="moves-cell">
+            <span class="move-number">{{ i + 1 }}.</span>
 
             <span
               class="move"
-              (click)="goToMove(i * 2)"
+              (click)="selectMove(i * 2)"
               [class.active]="moveIndex() === i * 2 + 1"
             >
               {{ pair.white }}
@@ -44,17 +49,25 @@
             @if (pair.black) {
               <span
                 class="move"
-                (click)="goToMove(i * 2 + 1)"
+                (click)="selectMove(i * 2 + 1)"
                 [class.active]="moveIndex() === i * 2 + 2"
               >
                 {{ pair.black }}
               </span>
             }
-
           </div>
-        }
 
-      </div>
+          <!-- Note Cell -->
+          <div
+            class="note-cell"
+            contenteditable="true"
+            (input)="updateNote(i + 1, $event)"
+            (blur)="saveNote(i + 1)"
+            #noteCell
+          ></div>
+
+        </div>
+      }
     </div>
   </div>
 </div>

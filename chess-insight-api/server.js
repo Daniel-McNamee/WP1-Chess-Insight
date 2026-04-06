@@ -1,9 +1,26 @@
-const express = require("express");
-const axios = require("axios");
-const cors = require("cors");
+import express from "express";
+import axios from "axios";
+import cors from "cors";
+import dotenv from "dotenv";
+import "./db/conn.js";
+import playersRoutes from "./routes/players.js";
+import favouritesRoutes from "./routes/favourites.js";
+import recentRoutes from "./routes/recent.js";
+import moveNotesRoutes from "./routes/moveNotes.js";
 
+// Load environment variables from .env file
+dotenv.config();
+
+// Create Express app and apply middleware
 const app = express();
 app.use(cors());
+app.use(express.json());
+
+// Use database routes
+app.use("/db/players", playersRoutes);
+app.use("/db/favourites", favouritesRoutes);
+app.use("/db/recent", recentRoutes);
+app.use("/db/move-notes", moveNotesRoutes);
 
 const PORT = 3000;
 
@@ -81,6 +98,21 @@ app.get("/api/player/:username/archives", async (req, res) => {
   }
 });
 
+// Helper to extract opening name from PGN
+function extractOpening(pgn) {
+  const ecoMatch = pgn.match(/\[ECOUrl ".*\/(.*)"\]/);
+
+  if (ecoMatch && ecoMatch[1]) {
+    let opening = ecoMatch[1]
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, l => l.toUpperCase());
+
+    return opening;
+  }
+
+  return "Unknown Opening";
+}
+
 // GET games for specific archive
 app.get("/api/archive", async (req, res) => {
   const { url, username } = req.query;
@@ -95,18 +127,36 @@ app.get("/api/archive", async (req, res) => {
       const playerResult = isWhite ? g.white.result : g.black.result;
 
       let resultLabel = "Draw";
-
       if (playerResult === "win") resultLabel = "Win";
-      else if (["checkmated", "resigned", "timeout", "lose"].includes(playerResult))
+      else if (
+        ["checkmated", "resigned", "timeout", "lose"].includes(playerResult)
+      )
         resultLabel = "Loss";
+
+      // Results for each side
+      let whiteResult = "Draw";
+      let blackResult = "Draw";
+
+      if (g.white.result === "win") {
+        whiteResult = "Win";
+        blackResult = "Loss";
+      } else if (g.black.result === "win") {
+        whiteResult = "Loss";
+        blackResult = "Win";
+      }
 
       return {
         white: g.white.username,
         black: g.black.username,
-        result: resultLabel,
+        whiteRating: g.white.rating,
+        blackRating: g.black.rating,
+        result: resultLabel, // for games list
+        whiteResult, // for game details
+        blackResult, // for game details
         date: g.end_time,
         pgn: g.pgn,
-        timeClass: g.time_class
+        timeClass: g.time_class,
+        opening: extractOpening(g.pgn)
       };
     });
 

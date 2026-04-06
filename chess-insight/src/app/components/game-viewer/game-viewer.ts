@@ -4,24 +4,32 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import 'chessboard-element';
 import { Chess } from 'chess.js';
 import { ViewChildren, QueryList, ElementRef, ViewChild } from '@angular/core';
+import { ChessService } from '../../services/chess';
+import { FormsModule } from '@angular/forms';
 
+// game-viewer component is responsible for displaying a chess game, allowing navigation through moves and managing move notes. 
+// It uses chess.js for game logic and chessboard-element for the UI.
 @Component({
   selector: 'app-game-viewer',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './game-viewer.html',
   styleUrl: './game-viewer.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA] 
 })
 export class GameViewerComponent implements AfterViewInit {
 
+  // Inputs and ViewChild/ViewChildren for accessing DOM elements and receiving game data
   @Input() game: any;
   @ViewChildren('moveRow') moveRows!: QueryList<ElementRef>;
   @ViewChild('board') board!: ElementRef;
   @Input() playerUsername!: string;
+  @ViewChildren('noteCell') noteCells!: QueryList<ElementRef>;
 
+  // Chess.js instance for managing game state
   chess = new Chess();
 
+  // Signals for managing component state
   moves = signal<string[]>([]);
   movePairs = signal<{ white?: string; black?: string }[]>([]);
   moveIndex = signal(0);
@@ -29,19 +37,41 @@ export class GameViewerComponent implements AfterViewInit {
   orientation = signal<'white' | 'black'>('white');
   highlightSquares = signal<string>('');
 
-  constructor() {
+  moveNotes = signal<{ [moveNumber: number]: string }>({});
+  selectedMoveNumber = signal<number | null>(null);
+  noteText = signal("");
+
+  // Constructor injects the ChessService and sets up an effect to load game data and notes when the game input changes
+  constructor(private chessService: ChessService) {
     effect(() => {
       const game = this.game;
       if (!game?.pgn) return;
 
       this.loadGame(game.pgn);
+      this.loadNotes(game.pgn);
     });
   }
 
+  // Inject styles for move highlighting after the view initializes
   ngAfterViewInit() {
     this.injectHighlightStyles();
   }
 
+  // Load move notes from the backend and map them to move numbers
+  loadNotes(pgn: string) {
+    this.chessService.getMoveNotes(pgn).subscribe((notes: any[]) => {
+      const noteMap: any = {};
+
+      notes.forEach(n => {
+        noteMap[n.moveNumber] = n.note;
+      });
+
+      this.moveNotes.set(noteMap);
+      this.loadNotesIntoCells();
+    });
+  }
+
+  // Load a game from its PGN, set up moves, orientation and move pairs for display
   loadGame(pgn: string) {
     this.chess.reset();
 
@@ -78,10 +108,51 @@ export class GameViewerComponent implements AfterViewInit {
 
     this.movePairs.set(pairs);
 
+    // Reset to initial position
     this.chess.reset();
     this.currentFen.set(this.chess.fen());
   }
 
+  // Load notes into the corresponding move cells in the UI
+  loadNotesIntoCells() {
+    setTimeout(() => {
+      const cells = this.noteCells.toArray();
+      const notes = this.moveNotes();
+
+      cells.forEach((cell, index) => {
+        const moveNumber = index + 1;
+        if (notes[moveNumber]) {
+          cell.nativeElement.innerText = notes[moveNumber];
+        }
+      });
+    });
+  }
+
+  // Update the note for a specific move when the user edits it
+  updateNote(moveNumber: number, event: any) {
+    const text = event.target.innerText;
+
+    const notes = { ...this.moveNotes() };
+    notes[moveNumber] = text;
+    this.moveNotes.set(notes);
+  }
+
+  // Save the note for a specific move to the backend
+  saveNote(moveNumber: number) {
+    const game = this.game;
+    const note = this.moveNotes()[moveNumber];
+
+    if (!game) return;
+
+    this.chessService.saveMoveNote({
+      pgn: game.pgn,
+      moveNumber: moveNumber,
+      note: note,
+      game: game
+    }).subscribe();
+  }
+
+  // Navigate to the next move in the game, updating the board and highlights
   nextMove() {
     const index = this.moveIndex();
     if (index >= this.moves().length) return;
@@ -93,6 +164,7 @@ export class GameViewerComponent implements AfterViewInit {
     setTimeout(() => this.scrollToCurrentMove());
   }
 
+  // Navigate to the previous move in the game, updating the board and highlights
   prevMove() {
     if (this.moveIndex() === 0) return;
     this.chess.undo();
@@ -109,6 +181,7 @@ export class GameViewerComponent implements AfterViewInit {
     setTimeout(() => this.scrollToCurrentMove());
   }
 
+  // Reset the board to the starting position, clearing highlights
   goToStart() {
     this.chess.reset();
     this.moveIndex.set(0);
@@ -116,6 +189,7 @@ export class GameViewerComponent implements AfterViewInit {
     this.updateHighlight(null);
   }
 
+  // Skip to the end of the game, applying all moves and updating highlights
   goToEnd() {
     this.chess.reset();
     const moves = this.moves();
@@ -130,6 +204,18 @@ export class GameViewerComponent implements AfterViewInit {
     this.updateHighlightFromHistory();
   }
 
+  // Select a specific move by index, updating the board, highlights and selected move state
+  selectMove(index: number) {
+    this.goToMove(index);
+
+    const moveNumber = index + 1;
+    this.selectedMoveNumber.set(moveNumber);
+
+    const notes = this.moveNotes();
+    this.noteText.set(notes[moveNumber] || "");
+  }
+
+  // Navigate to a specific move index, applying moves up to that point and updating the board and highlights
   goToMove(index: number) {
     this.chess.reset();
     const moves = this.moves();
@@ -146,6 +232,7 @@ export class GameViewerComponent implements AfterViewInit {
     setTimeout(() => this.scrollToCurrentMove());
   }
 
+  // Scroll the move list to ensure the current move is visible and centered in the view
   scrollToCurrentMove() {
     const move = this.moveIndex();
     if (move === 0) return;
@@ -159,6 +246,7 @@ export class GameViewerComponent implements AfterViewInit {
     });
   }
 
+  // Update the highlight on the chessboard for the last move made, highlighting the from and to squares
   updateHighlight(move: any) {
     const boardEl = this.board?.nativeElement;
     if (!boardEl) return;
@@ -180,12 +268,14 @@ export class GameViewerComponent implements AfterViewInit {
     toSquare?.classList.add('last-move-to');
   }
 
+  // Update highlights based on the current game history, used when jumping to a specific move or the end of the game
   updateHighlightFromHistory() {
     const history = this.chess.history({ verbose: true });
     const lastMove = history[history.length - 1];
     this.updateHighlight(lastMove);
   }
 
+  // Inject custom styles into the chessboard's shadow DOM to enable move highlighting effects
   injectHighlightStyles() {
     const boardEl = this.board?.nativeElement;
     if (!boardEl) return;

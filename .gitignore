@@ -1,0 +1,23 @@
+# Node modules (both projects)
+chess-insight/node_modules/
+chess-insight-api/node_modules/
+
+# Environment variables
+.env
+chess-insight-api/.env
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/

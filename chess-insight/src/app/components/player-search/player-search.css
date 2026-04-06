@@ -1,7 +1,15 @@
+/* =========================
+   GENERAL PAGE SECTIONS
+   ========================= */
+
+/* Container for games section */
 .games {
   margin-top: 20px;
 }
 
+/* Main page layout:
+   Left = player panel
+   Right = games panel */
 .layout {
   display: grid;
   grid-template-columns: 380px 1fr;
@@ -10,48 +18,67 @@
   align-items: start;
 }
 
+
+/* =========================
+   PLAYER PANEL (LEFT SIDE)
+   ========================= */
+
+/* Player info panel containing search, avatar, stats */
 .player-panel {
   width: 420px;
   font-size: 22px;
   line-height: 1.4;
 }
 
+/* Username search input */
 .player-panel input {
   font-size: 16px;
   padding: 8px 10px;
   width: 220px;
 }
 
+/* Search / action buttons */
 .player-panel button {
   font-size: 16px;
   padding: 8px 14px;
   margin-left: 6px;
 }
 
+/* Player avatar image */
 .player-avatar {
   width: 150px;
   margin: 12px 0;
 }
 
+/* Player name heading */
 .player-panel h2 {
   font-size: 28px;
   margin-bottom: 10px;
 }
 
+/* Section headings */
 .player-panel h3 {
   font-size: 24px;
 }
 
+/* Sub headings */
 .player-panel h4 {
   font-size: 20px;
   margin-top: 10px;
 }
 
+
+/* =========================
+   GAMES PANEL (RIGHT SIDE)
+   ========================= */
+
+/* Container for games list and controls */
 .games-panel {
   flex: 1;
   min-width: 600px;
 }
 
+/* Scrollable list of games */
 .games-list {
   max-height: 550px;
   overflow-y: auto;
@@ -60,41 +87,83 @@
   border-radius: 6px;
 }
 
+
+/* =========================
+   GAME LIST ITEMS
+   ========================= */
+
+/* Base game row styling */
 .game-item {
   display: grid;
-  grid-template-columns: 1fr auto 1fr auto;
   align-items: center;
-  padding: 8px;
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
+  padding: 10px 14px;
+  border-bottom: 1px solid #ddd;
 }
 
-.white {
-  text-align: right;
-  padding-right: 6px;
+/* Layout for normal games */
+.game-item.normal {
+  grid-template-columns: 1fr 60px 1fr 160px 40px;
 }
 
-.black {
-  text-align: left;
-  padding-left: 6px;
+/* Layout for annotated games (extra column for badge/info) */
+.game-item.annotated {
+  grid-template-columns: 1fr 60px 1fr 120px 120px 40px;
 }
 
-.vs {
-  color: #666;
-}
-
+/* Hover effect for game rows */
 .game-item:hover {
   background: #f5f5f5;
+  background-color: #f5f5f5;
 }
 
+/* Selected game highlight */
 .game-item.selected {
   background: #e3f2fd;
 }
 
+
+/* =========================
+   PLAYER NAME COLUMNS
+   ========================= */
+
+.white {
+  text-align: right;
+  padding-right: 10px;
+}
+
+.vs {
+  text-align: center;
+  color: #777;
+}
+
+.black {
+  text-align: left;
+  padding-left: 10px;
+}
+
+
+/* =========================
+   RESULT / BADGES / STAR
+   ========================= */
+
+/* Center result and annotated badge */
+.result,
+.annotated-badge {
+  justify-self: center;
+}
+
+/* Star favourite button alignment */
+.star-button {
+  justify-self: end;
+}
+
+/* Game result text */
 .result {
+  text-align: center;
   font-weight: 600;
 }
 
+/* Result colours */
 .result.win {
   color: #2e7d32;
 }
@@ -107,16 +176,29 @@
   color: #616161;
 }
 
+
+/* =========================
+   BUTTONS
+   ========================= */
+
+/* General app buttons */
 .app-button {
   font-size: 18px;
   padding: 4px 8px;
   cursor: pointer;
 }
 
+/* Back button spacing */
 .back-button {
   margin-bottom: 12px;
 }
 
+
+/* =========================
+   SEARCH SUGGESTIONS
+   ========================= */
+
+/* Suggestions dropdown box */
 .suggestions {
   border: 1px solid #ddd;
   border-radius: 6px;
@@ -125,21 +207,30 @@
   overflow-y: auto;
 }
 
+/* Individual suggestion item */
 .suggestion-item {
   padding: 8px;
   cursor: pointer;
 }
 
+/* Hover effect for suggestions */
 .suggestion-item:hover {
   background: #f5f5f5;
 }
 
+
+/* =========================
+   FILTERS & PAGINATION
+   ========================= */
+
+/* Game filters (Blitz, Rapid, etc.) */
 .filters {
   margin-bottom: 10px;
   display: flex;
   gap: 8px;
 }
 
+/* Pagination controls */
 .pagination {
   margin-top: 10px;
   display: flex;
@@ -147,9 +238,161 @@
   align-items: center;
 }
 
+
+/* =========================
+   LOADING STATE
+   ========================= */
+
+/* Loading message container */
 .loading-box {
   padding: 20px;
   text-align: center;
   border: 1px solid #ddd;
   border-radius: 6px;
+}
+
+
+/* =========================
+   GAME INFO ROW
+   ========================= */
+
+/* Small info row inside game item */
+.game-info {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+
+/* =========================
+   FAVOURITE STAR BUTTON
+   ========================= */
+
+/* Star button base styling */
+.star-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #bbb;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+/* Highlighted when game is favourited */
+.star-button.favourited {
+  color: gold;
+}
+
+/* Hover animation */
+.star-button:hover {
+  transform: scale(1.6);
+}
+
+
+/* =========================
+   TABS
+   ========================= */
+
+/* Tabs container */
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+/* Tab buttons */
+.tabs button {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
+  cursor: pointer;
+}
+
+/* Active tab */
+.tabs button.active {
+  background: #ddd;
+  font-weight: bold;
+}
+
+/* Top bar containing filters and tabs */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.filters button {
+  margin-right: 6px;
+}
+
+.tabs button {
+  margin-left: 6px;
+}
+
+.tabs .active {
+  background-color: #ddd;
+  font-weight: bold;
+}
+
+
+/* =========================
+   GAME DETAILS PANEL
+   ========================= */
+
+/* Game details box under the list */
+.game-details {
+  background: #f5f5f5;
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 45px;
+}
+
+/* Row containing white and black player boxes */
+.players-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+/* Individual player info box */
+.player-box {
+  flex: 1;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* White player styling */
+.white-box {
+  background: #ffffff;
+}
+
+/* Black player styling */
+.black-box {
+  background: #e8e8e8;
+}
+
+/* Player name styling */
+.player-name {
+  font-weight: bold;
+  font-size: 22px;
+  margin-bottom: 5px;
+}
+
+/* Game metadata section (date, opening, etc.) */
+.game-meta {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #ccc;
+}
+
+/* Badge showing game is annotated */
+.annotated-badge {
+  margin-left: 10px;
+  font-size: 12px;
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 2px 6px;
+  border-radius: 4px;
 }
