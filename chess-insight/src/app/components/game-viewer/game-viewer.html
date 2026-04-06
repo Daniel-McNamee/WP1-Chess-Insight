@@ -4,22 +4,23 @@
 
     <!-- Board -->
     <div class="board-wrapper">
-      <div class="board">
+
+      <div class="board-container">
         <chess-board
           #board
           [attr.position]="currentFen()"
           [attr.orientation]="orientation()"
           style="width: 600px;">
         </chess-board>
-
-        <!-- Controls -->
-        <div class="controls">
-          <button class="app-button" (click)="goToStart()">⏮</button>
-          <button class="app-button" (click)="prevMove()">◀</button>
-          <button class="app-button" (click)="nextMove()">▶</button>
-          <button class="app-button" (click)="goToEnd()">⏭</button>
-        </div>
       </div>
+
+      <div class="controls">
+        <button class="button-primary" (click)="goToStart()">⏮</button>
+        <button class="button-primary" (click)="prevMove()">◀</button>
+        <button class="button-primary" (click)="nextMove()">▶</button>
+        <button class="button-primary" (click)="goToEnd()">⏭</button>
+      </div>
+
     </div>
 
     <!-- Moves List -->

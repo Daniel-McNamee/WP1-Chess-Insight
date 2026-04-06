@@ -133,19 +133,58 @@
         <div class="top-bar">
           <!-- Filters -->
           <div class="filters">
-            <button (click)="setFilter('all')">All</button>
-            <button (click)="setFilter('blitz')">Blitz</button>
-            <button (click)="setFilter('rapid')">Rapid</button>
-            <button (click)="setFilter('bullet')">Bullet</button>
+            <button
+              (click)="setFilter('all')"
+              [class.active]="gameFilter() === 'all'">
+              All
+            </button>
+
+            <button
+              (click)="setFilter('blitz')"
+              [class.active]="gameFilter() === 'blitz'">
+              Blitz
+            </button>
+
+            <button
+              (click)="setFilter('rapid')"
+              [class.active]="gameFilter() === 'rapid'">
+              Rapid
+            </button>
+
+            <button
+              (click)="setFilter('bullet')"
+              [class.active]="gameFilter() === 'bullet'">
+              Bullet
+            </button>
           </div>
 
           <!-- Tabs -->
           <div class="tabs">
-            <button (click)="setTab('games')">Games</button>
-            <button (click)="setTab('favourites')">Favourite Games</button>
-            <button (click)="setTab('recent')">Recently Viewed</button>
-            <button (click)="setTab('annotated')">Annotated Games</button>
+            <button
+              (click)="setTab('games')"
+              [class.active]="activeTab() === 'games'">
+              Games
+            </button>
+
+            <button
+              (click)="setTab('favourites')"
+              [class.active]="activeTab() === 'favourites'">
+              Favourite Games
+            </button>
+
+            <button
+              (click)="setTab('recent')"
+              [class.active]="activeTab() === 'recent'">
+              Recently Viewed
+            </button>
+
+            <button
+              (click)="setTab('annotated')"
+              [class.active]="activeTab() === 'annotated'">
+              Annotated Games
+            </button>
           </div>
+
         </div>
 
         <!-- Loading Indicator -->
@@ -321,7 +360,7 @@
 
         <!-- Replay button -->
         @if (selectedGame()) {
-          <button class="app-button" (click)="startReplay()" style="margin-top: 10px;">
+          <button class="button-primary" (click)="startReplay()" style="margin-top: 10px;">
             Replay Game
           </button>
         }

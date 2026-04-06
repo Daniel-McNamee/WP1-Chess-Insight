@@ -1,6 +1,6 @@
 /* =========================
    GENERAL PAGE SECTIONS
-   ========================= */
+   ========================= */ 
 
 /* Container for games section */
 .games {
@@ -80,11 +80,12 @@
 
 /* Scrollable list of games */
 .games-list {
-  max-height: 550px;
+  max-height: 480px;
   overflow-y: auto;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   padding: 10px;
-  border-radius: 6px;
+  border-radius: 8px;
+  background: var(--bg-card);
 }
 
 
@@ -112,13 +113,13 @@
 
 /* Hover effect for game rows */
 .game-item:hover {
-  background: #f5f5f5;
-  background-color: #f5f5f5;
+  background: #292929;
 }
 
 /* Selected game highlight */
 .game-item.selected {
-  background: #e3f2fd;
+  background: #2e2e2e;
+  border-left: 3px solid var(--accent);
 }
 
 
@@ -182,15 +183,32 @@
    ========================= */
 
 /* General app buttons */
-.app-button {
-  font-size: 18px;
-  padding: 4px 8px;
+.button-primary {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
   cursor: pointer;
+}
+
+.button-primary:hover {
+  background: #95c96b;
 }
 
 /* Back button spacing */
 .back-button {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
   margin-bottom: 12px;
+}
+
+.back-button:hover {
+  background: #95c96b;
 }
 
 
@@ -200,7 +218,8 @@
 
 /* Suggestions dropdown box */
 .suggestions {
-  border: 1px solid #ddd;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 6px;
   margin-top: 6px;
   max-height: 200px;
@@ -215,7 +234,7 @@
 
 /* Hover effect for suggestions */
 .suggestion-item:hover {
-  background: #f5f5f5;
+  background: #3a3a3a;
 }
 
 
@@ -238,6 +257,33 @@
   align-items: center;
 }
 
+/* Pagination buttons */
+.pagination button {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: var(--text-main);
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Hover effect for pagination buttons */
+.pagination button:hover {
+  background: #95c96b;
+}
+
+/* Disabled state for pagination buttons */
+.pagination button:disabled {
+  background: #3a3a3a;
+  border: 1px solid #3a3a3a;
+  color: #888;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.pagination button:disabled:hover {
+  background: #3a3a3a;
+}
 
 /* =========================
    LOADING STATE
@@ -296,22 +342,29 @@
 /* Tabs container */
 .tabs {
   display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 6px;
+  border-bottom: 1px solid var(--border);
 }
 
 /* Tab buttons */
 .tabs button {
-  padding: 6px 12px;
-  border: 1px solid #ccc;
-  background: #f5f5f5;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  padding: 8px 14px;
   cursor: pointer;
+  border-bottom: 3px solid transparent;
+}
+
+/* Hover */
+.tabs button:hover {
+  color: var(--text-main);
 }
 
 /* Active tab */
 .tabs button.active {
-  background: #ddd;
-  font-weight: bold;
+  color: var(--text-main);
+  border-bottom: 3px solid var(--accent);
 }
 
 /* Top bar containing filters and tabs */
@@ -322,19 +375,36 @@
   margin-bottom: 8px;
 }
 
+/* =========================
+  FILTERS
+   ========================= */
+
+/* Container for time control filters */
+.filters {
+  display: flex;
+  gap: 6px;
+}
+
+/* Filter buttons */
 .filters button {
-  margin-right: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
-.tabs button {
-  margin-left: 6px;
+/* Hover */
+.filters button:hover {
+  border-color: var(--accent);
 }
 
-.tabs .active {
-  background-color: #ddd;
-  font-weight: bold;
+/* Active filter */
+.filters button.active {
+  border-color: var(--accent);
+  color: var(--accent);
 }
-
 
 /* =========================
    GAME DETAILS PANEL
@@ -342,42 +412,66 @@
 
 /* Game details box under the list */
 .game-details {
-  background: #f5f5f5;
+  background: var(--bg-panel);
   padding: 16px;
   border-radius: 8px;
   margin-top: 45px;
+  margin-right: 20px;
+  border: 1px solid var(--border);
 }
 
 /* Row containing white and black player boxes */
 .players-row {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 12px;
 }
 
 /* Individual player info box */
 .player-box {
   flex: 1;
-  padding: 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  min-width: 145px;   /* prevents squishing */
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
 }
 
 /* White player styling */
 .white-box {
-  background: #ffffff;
+  background: linear-gradient(145deg, #303030, #2a2a2a);
+  border-left: 4px solid #e6e6e6;
 }
 
 /* Black player styling */
 .black-box {
-  background: #e8e8e8;
+  background: linear-gradient(145deg, #262626, #1f1f1f);
+  border-left: 4px solid #888;
+}
+
+/* Player info text */
+.player-box p {
+  font-size: 15px;
+  margin: 4px 0;
 }
 
 /* Player name styling */
 .player-name {
   font-weight: bold;
-  font-size: 22px;
+  font-size: 18px;
   margin-bottom: 5px;
+}
+
+/* Player result styling */
+.player-box p:last-child {
+  font-weight: 600;
+}
+
+.white-box p:last-child {
+  color: #81c784; /* win green */
+}
+
+.black-box p:last-child {
+  color: #e57373; /* loss red */
 }
 
 /* Game metadata section (date, opening, etc.) */

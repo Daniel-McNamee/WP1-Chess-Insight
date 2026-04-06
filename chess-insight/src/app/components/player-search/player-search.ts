@@ -36,13 +36,14 @@ export class PlayerSearchComponent {
   favouriteGames = signal<any[]>([]);
 
   // UI State
+  activeFilter = signal<'all' | 'blitz' | 'rapid' | 'bullet'>('all');
   activeTab = signal<'games' | 'favourites' | 'recent' | 'annotated'>('games');
   replayMode = signal(false);
 
   // Filters / Pagination
   gameFilter = signal<'all' | 'blitz' | 'rapid' | 'bullet'>('all');
   currentPage = signal(1);
-  gamesPerPage = 12;
+  gamesPerPage = 10;
 
   // Loading / Error State
   loadingGames = signal(false);

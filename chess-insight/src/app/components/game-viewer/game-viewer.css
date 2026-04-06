@@ -1,32 +1,76 @@
 /* Main layout for the game viewer:
    Left side = chessboard area
-   Right side = moves list and notes */
+   Right side = moves list and notes */ 
 .viewer {
   display: grid;
   grid-template-columns: 600px 400px;
   gap: 30px;
   align-items: start;
+  align-content: start; 
 }
+
+.viewer {
+  grid-auto-rows: min-content;
+}
+
+chess-board {
+  display: block;
+  height: 600px;
+}
+
+.board-container chess-board {
+  display: block;
+  height: 600px;
+  overflow: hidden;
+}
+
+/* Debug outlines for layout visualization - remove in production 
+.board-wrapper { outline: 2px solid red; }
+.board-container { outline: 2px solid blue; }
+.controls { outline: 2px solid green; }
+.viewer { outline: 2px solid yellow; }
+chess-board {
+  outline: 3px solid purple;
+}
+*/
 
 /* Wrapper around the chessboard.
    Allows space for board controls (next, previous, reset, etc.)
    and keeps them stacked vertically with spacing. */
+
 .board-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  align-items: center;
+  justify-content: start;
+  align-self: start;
 }
 
 /* Navigation buttons for stepping through the game moves */
 .controls {
   display: flex;
   gap: 12px;
+  justify-content: center;
+}
+
+.controls button {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.controls button:hover {
+  background: #95c96b;
 }
 
 /* Container holding the move list and notes.
    Fixed height with vertical scrolling so long games don't stretch the layout. */
 .moves {
-  max-height: 640px;
+  height: 620px;
   overflow-y: auto;
   width: 400px;
 }
