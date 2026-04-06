@@ -289,22 +289,13 @@ export class GameViewerComponent implements AfterViewInit {
     style.id = 'highlight-style';
 
     style.textContent = `
-      @keyframes movePulse {
-        0% {
-          box-shadow: inset 0 0 0 0px rgba(30,136,229,0.9);
-          background: rgba(30,136,229,0.55);
-        }
-        100% {
-          box-shadow: inset 0 0 0 5px #1e88e5;
-          background: rgba(30,136,229,0.35);
-        }
+      .last-move-from {
+        box-shadow: inset 0 0 0 9999px rgba(102, 188, 49, 0.5);
       }
 
-      .last-move-from,
       .last-move-to {
-        box-shadow: inset 0 0 0 5px #1e88e5;
-        background: rgba(30,136,229,0.35);
-        animation: movePulse 220ms ease-out;
+        box-shadow: 
+          inset 0 0 0 9999px rgba(102, 188, 49, 0.8);
       }
     `;
 
