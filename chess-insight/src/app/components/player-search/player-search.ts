@@ -47,6 +47,7 @@ export class PlayerSearchComponent {
 
   // Loading / Error State
   loadingGames = signal(false);
+  noGames = signal(false);
   error = signal<string | null>(null);
 
   // Method to select a game and display it in the GameViewerComponent
@@ -128,6 +129,18 @@ export class PlayerSearchComponent {
       next: data => {
         this.games.set(data);
         this.loadingGames.set(false);
+
+        if (!data || data.length === 0) {
+          this.noGames.set(true);
+        }
+        else {
+          this.noGames.set(false);
+        }
+      },
+      error: () => {
+        this.loadingGames.set(false);
+        this.games.set([]); 
+        this.noGames.set(true); // treat errors as no games
       }
     });
   }

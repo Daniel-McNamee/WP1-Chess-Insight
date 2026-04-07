@@ -8,7 +8,10 @@ import { Observable } from 'rxjs';
 export class ChessService {
 
   // Base URL for the backend API
-  private apiBase = 'http://localhost:3000/api';
+  private baseUrl = 'http://34.247.217.221:3000';
+  private apiBase = `${this.baseUrl}/api`;
+  private dbBase = `${this.baseUrl}/db`;
+  // private apiBase = 'http://localhost:3000/api';
 
   // Inject HttpClient for making API calls
   constructor(private http: HttpClient) {}
@@ -29,25 +32,25 @@ export class ChessService {
 
   // Search for players by username
   searchPlayers(query: string) {
-    return this.http.get<string[]>(`http://localhost:3000/api/players/search/${query}`);
+    return this.http.get<string[]>(`${this.apiBase}/players/search/${query}`);
   }
 
   // Fetch player's game archives
   getArchives(username: string) {
-    return this.http.get<any[]>(`http://localhost:3000/api/player/${username}/archives`);
+    return this.http.get<any[]>(`${this.apiBase}/player/${username}/archives`);
   }
 
   // Fetch games from a specific archive
   getArchiveGames(url: string, username: string) {
     return this.http.get<any[]>(
-      `http://localhost:3000/api/archive?url=${encodeURIComponent(url)}&username=${username}`
+      `${this.apiBase}/archive?url=${encodeURIComponent(url)}&username=${username}`
     );
   }
 
   // Save search history
   saveSearch(username: string) {
     return this.http.post(
-      'http://localhost:3000/db/players/search',
+      `${this.dbBase}/players/search`,
       { username }
     );
   }
@@ -55,14 +58,14 @@ export class ChessService {
   // Fetch search history
   getSearchHistory() {
     return this.http.get<any[]>(
-      'http://localhost:3000/db/players/search'
+      `${this.dbBase}/players/search`
     );
   }
 
   // Toggle favourite game
   toggleFavourite(game: any) {
     return this.http.post(
-      'http://localhost:3000/db/favourites/toggle',
+      `${this.dbBase}/favourites/toggle`,
       game
     );
   }
@@ -70,14 +73,14 @@ export class ChessService {
   // Fetch favourite games
   getFavouriteGames() {
     return this.http.get<any[]>(
-      'http://localhost:3000/db/favourites'
+      `${this.dbBase}/favourites`
     );
   }
 
   // Add a game to recent games
   addRecentGame(game: any) {
     return this.http.post(
-      'http://localhost:3000/db/recent',
+      `${this.dbBase}/recent`,
       game
     );
   }
@@ -85,14 +88,14 @@ export class ChessService {
   // Fetch recent games
   getRecentGames() {
     return this.http.get<any[]>(
-      'http://localhost:3000/db/recent'
+      `${this.dbBase}/recent`
     );
   }
 
   // Save a move note for a specific game
   saveMoveNote(note: any) {
     return this.http.post(
-      'http://localhost:3000/db/move-notes',
+      `${this.dbBase}/move-notes`,
       note
     );
   }
@@ -100,14 +103,14 @@ export class ChessService {
   // Fetch move notes for a specific game
   getMoveNotes(pgn: string) {
     return this.http.get<any[]>(
-      'http://localhost:3000/db/move-notes/' + encodeURIComponent(pgn)
+      `${this.dbBase}/move-notes/${encodeURIComponent(pgn)}`
     );
   }
 
   // Fetch annotated games
   getAnnotatedGames() {
     return this.http.get<any[]>(
-      'http://localhost:3000/db/move-notes'
+      `${this.dbBase}/move-notes`
     );
   }
 
