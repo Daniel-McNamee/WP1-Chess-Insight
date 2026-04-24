@@ -246,6 +246,11 @@ export class GameViewerComponent implements AfterViewInit {
     });
   }
 
+  // Toggle the orientation of the chessboard between white and black
+  toggleOrientation() {
+    this.orientation.update(o => o === 'white' ? 'black' : 'white');
+  }
+
   // Update the highlight on the chessboard for the last move made, highlighting the from and to squares
   updateHighlight(move: any) {
     const boardEl = this.board?.nativeElement;

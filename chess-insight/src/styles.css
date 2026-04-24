@@ -39,6 +39,7 @@ body {
   font-weight: 700;
   color: #7fa650;
   letter-spacing: 0.5px;
+  cursor: pointer;
 }
 
 .app-title:hover {

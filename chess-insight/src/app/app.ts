@@ -9,4 +9,8 @@ import { PlayerSearchComponent } from './components/player-search/player-search'
 })
 export class App {
   protected readonly title = signal('chess-insight');
+
+  reload() {
+    window.location.reload();
+  }
 }
